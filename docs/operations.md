@@ -43,3 +43,15 @@ Full detail retrieval and API sync require internet. RAM search works while upst
 The unit is active/running and enabled; `Linger=yes` is present. Caddy validated and reloaded. The localhost launcher API reports the project running with its systemd unit, and the exact generated list fetched by Firefox contains Manifold at mm.localhost. Browser rendering and the existing date-market detail/answers were inspected. Search returned 21 Navier title matches in 63–70 ms, with about 780 MiB service memory observed. All 12 tests passed with loopback access. No authenticated remote action was tested or submitted.
 
 The bettor/alignment/filter update passed 13 tests and browser inspection, including closed binary YES/NO examples. Visible search rows and cache status refresh from the local server every 30 seconds; upstream synchronization remains every 120 seconds. Detail text carries its own fetch time and can be explicitly refreshed. Updates do not overwrite draft inputs or an open action review.
+
+## Single-line columns and combined sorting — 2026-09-05
+
+Eighteen tests pass, including numeric multi-sort priority, pre-pagination sorting, missing/zero probability handling, clear-sort semantics, filter-cache invalidation and HTTP preservation of an empty sort specification. The running service was restarted and browser header interaction verified. Measured changing sort over 15 cached Navier matches: 0–0.1 ms server time, approximately 1–1.5 ms local HTTP time. Combined sorting across 38,914 cached open-market matches took about 48 ms server / 50 ms HTTP; first uncached search took about 173 ms server time. Measurements describe these requests, not universal latency bounds. Frontend uses native DOM controls with no additional library.
+
+## Date header priority correction — 2026-09-05
+
+Selecting a header now makes it primary, retaining earlier columns as tie breakers. Browser verification on the Navier results confirms chronological ordering across months and years. Nineteen Python tests pass, including closing timestamps across hours, days, months and years, equal-date bettor ties, missing dates last, and pagination. JavaScript syntax validation passes. Static assets are served directly; no service restart or build is needed for this correction.
+
+## History charts and removable creator terms — 2026-09-05
+
+The local service was restarted with the history endpoint and creator-token parser. All 23 tests pass. Browser inspection confirmed real history rendering, creator click producing `navier name:Bayesian`, two matching results, and independent term chips. Search and sorting do not await history requests. Static rendering uses native SVG and JavaScript, with no build step. Recent gross trade amounts can count both sides and differ from Manifold market Volume; the visible legend and product documentation describe coverage limitations.

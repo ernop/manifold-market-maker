@@ -17,3 +17,25 @@
 /* Keep the deadline column visible when a split view would squeeze it out. */
 @media(max-width:1200px){main{grid-template-columns:1fr}aside{position:static;max-height:none}}
 @media(max-width:720px){table{min-width:590px}.col-chance{width:98px}.col-bettors{width:62px}.col-volume{width:76px}.col-date{width:116px}}
+/* One value per column: no metadata byline, stacked dates, or volume subrow. */
+main{grid-template-columns:minmax(900px,1.8fr) minmax(350px,1fr)}
+table{min-width:900px}.col-creator{width:115px}.col-state{width:76px}.col-type{width:66px}.col-chance{width:102px}.col-bettors{width:85px}.col-volume{width:104px}.col-date{width:100px}
+td,th{vertical-align:middle}.creator-cell,.state-cell,.type-cell{color:#adb8c3;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.creator-cell{color:#c7cdd4}
+.chance{font-size:16px!important}.chance-number{color:#91cfaa;font-weight:650;letter-spacing:.15px}.yes-marker{font-size:12px;color:#91cfaa;margin-left:3px}.result-badge{line-height:24px}.chance .result-badge{line-height:1.3}
+.volume-indicator{display:inline-flex;flex-direction:row;gap:0;position:relative;min-height:24px;width:88px;align-items:center;justify-content:flex-end;padding:0 5px;isolation:isolate}
+.volume-scale{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:-1;fill:#644860}
+.volume-label{font-size:14px;font-weight:650;color:#ecd9e8;line-height:24px;font-variant-numeric:tabular-nums}
+.close-indicator{font-size:15px;font-weight:650;line-height:24px;padding:0;letter-spacing:.2px;border:0;background:transparent}
+.time-years{color:#c7b2dc}.time-months{color:#d5bf85}.time-days{color:#a2cdb4}.time-hours{color:#edb079}.time-minutes{color:#ef9785}.time-ended{color:#a5adb5}
+.sort-header{padding:4px 0;border:0;background:transparent;font-size:12px;font-weight:500;color:#fff;display:inline-flex;align-items:center;gap:3px}
+.sort-header:hover{background:#303b45}.sort-header.sort-active{color:#fff;font-weight:700}.sort-indicator{font-size:11px;min-width:16px;color:#bfc8d1}
+.sortline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:12px 0 5px}#sort-summary{color:#d9e1e8}#clear-sorts{padding:3px 8px;font-size:12px;background:#35414d}
+@media(max-width:1600px){main{grid-template-columns:1fr}aside{position:static;max-height:none}}
+
+.chance .result-badge{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.chance-percent{color:#91cfaa;font-size:.8em;font-weight:500}.probability-yes{color:#91cfaa}
+
+.col-history{width:450px}.history-cell{white-space:nowrap;font-size:12px;font-variant-numeric:tabular-nums}.history-inline{display:inline-flex;align-items:center;gap:8px}.history-chart{width:120px;height:32px;flex:none}.history-grid{stroke:#354149;stroke-width:.5}.history-volume{fill:#795774;opacity:.7}.history-price{fill:none;stroke:#91cfaa;stroke-width:1.4}.history-legend{font-size:12px;color:#a9b7bf;margin:8px 18px}.history-muted{color:#a9b7bf}table{min-width:1400px}main{display:block}
+
+#search-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 18px 8px}.search-chip{font-size:12px;padding:3px 8px;border-radius:12px;background:#25323b;color:#cbd8de}.creator-link{padding:0;border:0;background:none;color:#a9cce8;font:inherit;max-width:100%;overflow:hidden;text-overflow:ellipsis}.creator-link:hover{text-decoration:underline}

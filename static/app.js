@@ -1,5 +1,7 @@
 const $ = id => document.getElementById(id);
 let offset = 0, total = 0, selected = null, searchSequence = 0, detailSequence = 0, previewToken = null;
+let sortColumns = [{key:'bettors', direction:'desc'}];
+const sortLabels = {chance:'Chance', bettors:'Bettors', volume:'Volume', closing:'Closes'};
 const number = value => Number(value || 0).toLocaleString(undefined, {maximumFractionDigits: 0});
 const probability = value => value == null ? '—' : (100 * value).toFixed(1) + '%';
 const date = value => {
@@ -10,48 +12,75 @@ const date = value => {
 const choice = name => document.querySelector(`input[name="${name}"]:checked`).value;
 function volume(value) {
   if (value == null) return '—';
+  // Keeping the decimal makes 2.0k no shorter than 1.1k.
   for (const [scale, suffix] of [[1e9,'b'],[1e6,'m'],[1e3,'k']]) {
-    if (Math.abs(value) >= scale) return (value / scale).toFixed(1).replace(/\.0$/, '') + suffix;
+    if (value >= scale * .99995) return (value / scale).toFixed(1) + suffix;
   }
   return number(value);
 }
 function closeIndicator(market, now = Date.now()) {
   const node = element('span', undefined, 'close-indicator');
   if (market.isResolved) { node.textContent = 'Resolved'; node.classList.add('time-ended'); return node; }
-  if (!market.closeTime) { node.textContent = 'No deadline'; node.classList.add('time-ended'); return node; }
+  if (!market.closeTime) { node.textContent = '—'; node.title = 'No deadline'; node.classList.add('time-ended'); return node; }
   const remaining = market.closeTime - now;
   const minute = 60000, hour = 60 * minute, day = 24 * hour;
   if (remaining <= 0) { node.textContent = 'Closed'; node.classList.add('time-ended'); return node; }
-  let text;
-  if (remaining < minute) text = '<1m';
-  else if (remaining < hour) text = Math.floor(remaining / minute) + 'm';
-  else if (remaining < day) text = Math.floor(remaining / hour) + 'h ' + Math.floor(remaining % hour / minute) + 'm';
-  else if (remaining < 7 * day) text = Math.floor(remaining / day) + 'd ' + Math.floor(remaining % day / hour) + 'h';
-  else if (remaining < 365 * day) text = Math.floor(remaining / day) + 'd';
-  else text = (remaining / (365.25 * day)).toFixed(1).replace(/\.0$/, '') + 'y';
-  node.textContent = 'in ' + text;
-  node.classList.add(remaining <= day ? 'time-imminent' : remaining <= 7 * day ? 'time-soon' : remaining <= 30 * day ? 'time-month' : 'time-later');
-  node.title = 'Betting closes ' + new Date(market.closeTime).toLocaleString();
+  const [duration, unit, tone] = remaining >= 365.25 * day ? [365.25 * day, 'y', 'years']
+    : remaining >= 30.4375 * day ? [30.4375 * day, 'mo', 'months']
+    : remaining >= day ? [day, 'd', 'days']
+    : remaining >= hour ? [hour, 'h', 'hours'] : [minute, 'min', 'minutes'];
+  const value = remaining / duration;
+  node.textContent = (value < 1 ? '<1' : value.toFixed(1)) + unit;
+  node.classList.add('time-' + tone);
+  node.title = 'Betting closes ' + new Date(market.closeTime).toLocaleString() + '. Remaining time is approximate.';
   return node;
 }
 function volumeIndicator(value) {
   const node = element('span', undefined, 'volume-indicator');
-  const label = element('span', volume(value), value >= 1000 ? 'volume-large' : 'volume-small');
-  const scale = element('span', undefined, 'volume-scale');
+  const label = element('span', volume(value), 'volume-label');
+  const scale = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  scale.setAttribute('viewBox', '0 0 100 24');
+  scale.setAttribute('preserveAspectRatio', 'none');
+  scale.setAttribute('class', 'volume-scale');
   scale.setAttribute('aria-hidden', 'true');
-  // Fixed decades preserve meaning when the search or sorting changes.
-  for (let exponent = 0; exponent < 8; exponent++) {
-    scale.append(element('i', undefined, value >= 10 ** exponent ? 'volume-step filled' : 'volume-step'));
-  }
-  node.append(label, scale);
-  node.title = value == null ? 'Volume unavailable' : Number(value).toLocaleString(undefined, {maximumFractionDigits:2}) + ' total volume. Scale marks: 1, 10, 100, 1k, 10k, 100k, 1m, 10m.';
+  const fill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  // A fixed continuous log scale grows even within one abbreviation tier.
+  const width = value > 0 ? Math.min(100, 100 * Math.log10(1 + value) / 9) : 0;
+  fill.setAttribute('x', String(100 - width));
+  fill.setAttribute('width', String(width));
+  fill.setAttribute('height', '24');
+  fill.setAttribute('rx', '2');
+  scale.append(fill); node.append(scale, label);
+  node.title = value == null ? 'Volume unavailable' : Number(value).toLocaleString(undefined, {maximumFractionDigits:2}) + ' total volume. Fixed logarithmic bar, from 0 to 1 billion.';
   return node;
+}
+function updateSortHeaders() {
+  for (const button of document.querySelectorAll('.sort-header')) {
+    const index = sortColumns.findIndex(item => item.key === button.dataset.sort);
+    const direction = index < 0 ? null : sortColumns[index].direction;
+    button.querySelector('.sort-indicator').textContent = direction ? ` ${direction === 'asc' ? '↑' : '↓'}${index+1}` : ' ↕';
+    button.classList.toggle('sort-active', index >= 0);
+    const next = index > 0 ? `primary sorting (${direction})` : direction === null ? 'primary sorting (ascending)' : direction === 'asc' ? 'descending' : 'off';
+    button.setAttribute('aria-label', `${sortLabels[button.dataset.sort]}: ${direction || 'not sorted'}${index >= 0 ? ', priority ' + (index+1) : ''}. Click for ${next}.`);
+    button.title = button.getAttribute('aria-label');
+    button.closest('th').setAttribute('aria-sort', index === 0 ? direction === 'asc' ? 'ascending' : 'descending' : index > 0 ? 'other' : 'none');
+  }
+  $('sort-summary').textContent = sortColumns.length ? sortColumns.map((item, i) => `${i+1}. ${sortLabels[item.key]} ${item.direction === 'asc' ? '↑' : '↓'}`).join(' · ') : 'No column sorting · newest first';
+  $('clear-sorts').disabled = sortColumns.length === 0;
+}
+function cycleSort(key) {
+  const index = sortColumns.findIndex(item => item.key === key);
+  if (index < 0) sortColumns.unshift({key, direction:'asc'});
+  else if (index > 0) sortColumns.unshift(sortColumns.splice(index, 1)[0]);
+  else if (sortColumns[index].direction === 'asc') sortColumns[index].direction = 'desc';
+  else sortColumns.splice(index, 1);
+  offset = 0; updateSortHeaders(); run(search);
 }
 function resultBadge(value) {
   const node = element('span', undefined, 'result-badge');
   if (typeof value === 'string' && /^\d+(?:\.\d+)?%$/.test(value)) {
     node.classList.add('probability-yes');
-    node.append(document.createTextNode(value), element('span', 'Y', 'yes-marker'));
+    node.append(element('span', value.slice(0,-1), 'chance-number'), element('span', '%', 'chance-percent'), element('span', 'Y', 'yes-marker'));
     node.setAttribute('aria-label', value + ' chance of YES');
     node.title = 'Probability of YES; this market is not resolved.';
   } else node.textContent = value;
@@ -87,8 +116,9 @@ function marketState(market) {
   return ({MULTIPLE_CHOICE:'Multiple answers', DATE:'Date thresholds', POLL:'Poll', NUMERIC:'Numeric', PSEUDO_NUMERIC:'Numeric'})[market.outcomeType] || market.outcomeType;
 }
 async function search() {
+  renderSearchChips();
   const sequence = ++searchSequence;
-  const query = new URLSearchParams({q: $('query').value, state: choice('state'), type: choice('type'), resolution: $('resolution').value, sort: $('sort').value, creator: $('creator').value, offset});
+  const query = new URLSearchParams({q: $('query').value, state: choice('state'), type: choice('type'), resolution: $('resolution').value, sorts: sortColumns.map(item => item.key + ':' + item.direction).join(','), creator: $('creator').value, offset});
   const data = await api('/api/search?' + query);
   if (sequence !== searchSequence) return;
   total = data.total;
@@ -98,22 +128,31 @@ async function search() {
     if (selected?.id === market.id) row.classList.add('selected');
     const title = element('td');
     const open = button(market.question, () => showMarket(market.id)); open.className = 'market-title';
-    title.append(open, element('span', `${market.creatorUsername} · ${market.isResolved ? 'closed · resolved' : market.closeTime && market.closeTime <= Date.now() ? 'closed · unresolved' : 'open'} · ${market.outcomeType === 'BINARY' ? 'binary' : 'other'}`, 'byline'));
-    const chance = element('td', undefined, 'numeric chance'); chance.append(resultBadge(marketState(market)));
+    title.append(open);
+    const creator = element('td', undefined, 'creator-cell'); creator.title = market.creatorUsername;
+    const creatorButton = button(market.creatorUsername, () => filterCreator(market.creatorUsername));
+    creatorButton.className = 'creator-link'; creator.append(creatorButton);
+    const status = element('td', market.isResolved ? 'Resolved' : market.closeTime && market.closeTime <= Date.now() ? 'Closed' : 'Open', 'state-cell');
+    const type = element('td', ({BINARY:'Binary', MULTIPLE_CHOICE:'Multi', DATE:'Date', POLL:'Poll', NUMERIC:'Numeric', PSEUDO_NUMERIC:'Numeric'})[market.outcomeType] || 'Other', 'type-cell'); type.title = market.outcomeType;
+    const chance = element('td', undefined, 'numeric chance'); chance.append(resultBadge(market.outcomeType === 'BINARY' ? marketState(market) : market.isResolved ? 'Resolved' : '—'));
+    if (market.outcomeType !== 'BINARY') chance.title = 'Select the market to inspect individual answers.';
     const bettors = element('td', market.uniqueBettorCount == null ? '—' : number(market.uniqueBettorCount), 'numeric');
     bettors.title = market.uniqueBettorCount == null ? 'Bettor count unavailable' : number(market.uniqueBettorCount) + ' unique bettors';
     const traded = element('td', undefined, 'numeric'); traded.append(volumeIndicator(market.volume));
-    const closes = element('td', undefined, 'numeric date'); closes.append(closeIndicator(market), element('span', date(market.closeTime), 'close-date')); closes.title = market.closeTime ? new Date(market.closeTime).toLocaleString() : 'No close date';
-    row.append(title, chance, bettors, traded, closes);
+    const closes = element('td', undefined, 'numeric date'); closes.append(closeIndicator(market)); closes.title = market.closeTime ? new Date(market.closeTime).toLocaleString() : 'No close date';
+    const historyCell = element('td', market.outcomeType === 'BINARY' ? 'Loading…' : 'Select an answer', 'history-cell');
+    if (market.outcomeType === 'BINARY') historyCell.dataset.market = market.id;
+    row.append(title, creator, status, type, chance, bettors, traded, closes, historyCell);
     $('results').append(row);
   }
   if (!data.markets.length) {
     const row = element('tr'), cell = element('td', 'No matching markets. Try fewer words or include closed markets.');
-    cell.colSpan = 5; row.append(cell); $('results').append(row);
+    cell.colSpan = 9; row.append(cell); $('results').append(row);
   }
   $('results-status').textContent = `${number(total)} matches · ${data.milliseconds} ms${data.complete ? '' : ' · catalog still downloading'}`;
   $('page').textContent = `${total ? offset + 1 : 0}–${Math.min(offset + 100, total)} of ${number(total)}`;
   $('previous').disabled = offset === 0; $('next').disabled = offset + 100 >= total;
+  loadHistories();
 }
 function richText(node) {
   if (!node) return '';
@@ -129,7 +168,7 @@ async function showMarket(id) {
   history.replaceState(null, '', '#market=' + encodeURIComponent(id));
   const detail = $('detail');
   detail.replaceChildren(element('h2', market.question));
-  const summary = element('p', `${market.creatorUsername} · `); summary.append(resultBadge(marketState(market)), document.createTextNode(` · closes ${date(market.closeTime)}`));
+  const summary = element('p', `${market.creatorUsername} · `); summary.append(resultBadge(marketState(market)), document.createTextNode(''));
   detail.append(closeIndicator(market));
   detail.append(summary, element('p', `${market.uniqueBettorCount == null ? 'Bettor count unavailable' : number(market.uniqueBettorCount) + ' unique bettors'} · ${volume(market.volume)} volume`, 'detail-numbers'));
   detail.append(marketLink(market), element('p', 'Fetched from Manifold ' + new Date().toLocaleTimeString(), 'byline'));
@@ -198,11 +237,14 @@ $('execute-action').addEventListener('click', () => run(async () => {
 }));
 $('cancel-action').addEventListener('click', () => $('review').close());
 let searchTimer;
-for (const id of ['query','creator']) $(id).addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => { offset=0; run(search); }, 100); });
-for (const id of ['state','type','resolution','sort']) $(id).addEventListener('change', () => { offset=0; run(search); });
+for (const id of ['query','creator']) $(id).addEventListener('input', () => { renderSearchChips(); clearTimeout(searchTimer); searchTimer = setTimeout(() => { offset=0; run(search); }, 100); });
+for (const id of ['state','type','resolution']) $(id).addEventListener('change', () => { offset=0; run(search); });
+for (const button of document.querySelectorAll('.sort-header')) button.addEventListener('click', () => cycleSort(button.dataset.sort));
+$('clear-sorts').addEventListener('click', () => { sortColumns = []; offset = 0; updateSortHeaders(); run(search); });
+updateSortHeaders();
 $('previous').addEventListener('click', () => { offset=Math.max(0,offset-100); run(search); });
 $('next').addEventListener('click', () => { offset+=100; run(search); });
-$('mine').addEventListener('click', () => { $('creator').value='Ernie'; $('query').value=''; offset=0; run(search); });
+$('mine').addEventListener('click', () => { run(() => filterCreator('Ernie')); });
 $('sync').addEventListener('click', () => run(async () => { await api('/api/sync', {}); await status(); notice('Market update requested.'); }));
 $('account-toggle').addEventListener('click', () => { $('account-panel').hidden=!$('account-panel').hidden; });
 $('connect-form').addEventListener('submit', event => { event.preventDefault(); run(async () => {
@@ -226,3 +268,69 @@ run(async () => { await Promise.all([search(), status(), loadDraft()]);
 });
 // Refresh the visible result list from the local cache without touching draft inputs.
 setInterval(() => { if (!document.hidden && !$('review').open) run(() => Promise.all([status(), search()])); }, 30000);
+
+const historyCache = new Map();
+let historyLoading = false;
+function historyChart(data) {
+  const wrap = element('span', undefined, 'history-inline');
+  if (!data.points.length) return element('span', 'No price history', 'history-muted');
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 120 32');
+  svg.setAttribute('class', 'history-chart');
+  svg.setAttribute('role', 'img');
+  const add = (tag, attrs) => { const n=document.createElementNS(svg.namespaceURI,tag); for(const [k,v] of Object.entries(attrs)) n.setAttribute(k,v); svg.append(n); };
+  for (const y of [2,16,30]) add('line',{x1:0,x2:120,y1:y,y2:y,class:'history-grid'});
+  data.activity.forEach((v,i)=>{if(v>0) { const h=Math.min(28,Math.log10(1+v)/6*28); add('rect',{x:i*2.5,y:30-h,width:2,height:h,class:'history-volume'}); }});
+  // Preserve min/max excursions at each pixel, not a smoothing average.
+  const buckets = new Map();
+  for(const [t,p] of data.points) { const x=Math.max(0,Math.min(120,Math.round((t-data.start)/(data.end-data.start)*120))); if(!buckets.has(x)) buckets.set(x,[]); buckets.get(x).push(p); }
+  const points=[];
+  for(const [x,ps] of buckets) { for(const p of [ps[0],Math.min(...ps),Math.max(...ps),ps[ps.length-1]]) points.push(`${x},${30-p*28}`); }
+  add('polyline',{points:points.join(' '),class:'history-price'});
+  const change = Math.round(data.change*10)/10;
+  const delta = `${change>=0?'+':''}${change.toFixed(1)}pp`;
+  const summary = `${data.complete?'':'Partial · '}Δ ${delta} · ${data.low.toFixed(1)}–${data.high.toFixed(1)}% · ${volume(data.volume)} M gross · ${data.trades} ${data.trades===1?'trade':'trades'}`;
+  svg.setAttribute('aria-label', 'Last 24 hours: '+summary);
+  wrap.append(svg, element('span',summary));
+  return wrap;
+}
+async function loadHistories() {
+  if(historyLoading) return;
+  historyLoading=true;
+  try {
+    while(true) {
+      const cells=[...document.querySelectorAll('[data-market]')];
+      let pending=null;
+      for(const cell of cells) {
+        const cached=historyCache.get(cell.dataset.market);
+        if(cached && Date.now()-cached.at<120000) {
+          if(!cell.dataset.loaded) { cell.replaceChildren(cached.error?element('span','History unavailable'):historyChart(cached.data)); cell.dataset.loaded='1'; }
+        } else if(!pending) pending=cell.dataset.market;
+      }
+      if(!pending) break;
+      try { historyCache.set(pending,{at:Date.now(),data:await api('/api/history/'+encodeURIComponent(pending))}); }
+      catch { historyCache.set(pending,{at:Date.now(),error:true}); }
+      if(historyCache.size>300) historyCache.delete(historyCache.keys().next().value);
+    }
+  } finally {historyLoading=false;}
+}
+
+function searchTerms() {
+  return $('query').value.match(/(?:[^\s"]+|"[^"]*")+|"[^"]*$/g) || [];
+}
+function renderSearchChips() {
+  $('search-chips').replaceChildren(...searchTerms().map((term,index) => {
+    const chip = button(term+' ×', async () => {
+      const terms=searchTerms(); terms.splice(index,1);
+      $('query').value=terms.join(' '); offset=0; await search();
+    });
+    chip.className='search-chip'; chip.setAttribute('aria-label','Remove '+term);
+    return chip;
+  }));
+}
+async function filterCreator(name) {
+  const terms=searchTerms().filter(term=>! /^(name|from):/i.test(term));
+  terms.push('name:'+name);
+  $('query').value=terms.join(' '); $('creator').value=''; offset=0;
+  await search();
+}

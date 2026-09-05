@@ -47,6 +47,15 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(self.store.search('proof', state='resolved', creator='ernie')['markets'][0]['id'], 'b')
         self.assertEqual(self.store.search('unrelated')['total'], 0)
 
+    def test_creator_tokens_and_quoted_groups(self):
+        self.store.save([market('a', 'Navier Stokes proof', creatorUsername='Ernie'),
+                         market('b', 'Navier other Stokes proof', creatorUsername='Other'),
+                         market('c', 'Navier Stokes proof', creatorUsername='Other')])
+        self.assertEqual([m['id'] for m in self.store.search('navier name:ernie')['markets']], ['a'])
+        self.assertEqual(self.store.search('navier from:Ernie')['total'], 1)
+        result=self.store.search('"navier stokes" name:ernie name:other')
+        self.assertEqual([m['id'] for m in result['markets']], ['c'])
+
     def test_bettor_sort_and_type_resolution_filters(self):
         self.store.save([market('a', uniqueBettorCount=5),
                          market('b', uniqueBettorCount=100, outcomeType='MULTIPLE_CHOICE'),
@@ -56,6 +65,62 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(self.store.search(market_type='other')['markets'][0]['id'], 'b')
         self.assertEqual(self.store.search(state='closed', resolution='YES')['markets'][0]['id'], 'c')
         self.assertEqual(self.store.search(resolution='NO')['total'], 0)
+
+    def test_multi_sort_uses_numeric_values_and_priority_before_pagination(self):
+        self.store.save([market('a', uniqueBettorCount=8, volume=1100),
+                         market('b', uniqueBettorCount=8, volume=2000),
+                         market('c', uniqueBettorCount=9, volume=92)])
+        data = self.store.search(sorts='bettors:desc,volume:asc')
+        self.assertEqual([m['id'] for m in data['markets']], ['c', 'a', 'b'])
+        self.assertEqual(self.store.search(sorts='volume:desc', offset=1, limit=1)['markets'][0]['id'], 'a')
+        self.assertEqual([m['id'] for m in self.store.search(sorts='bettors:asc,volume:desc')['markets']], ['b','a','c'])
+
+    def test_closing_sort_across_units_with_ties_missing_and_pagination(self):
+        hour = 3600000
+        base = 2000000000000
+        self.store.save([market('years', closeTime=base + 24*365*4*hour, uniqueBettorCount=100),
+                         market('months', closeTime=base + 24*90*hour, uniqueBettorCount=90),
+                         market('days', closeTime=base + 24*3*hour, uniqueBettorCount=80),
+                         market('hours', closeTime=base + 2*hour, uniqueBettorCount=1),
+                         market('hours-tie', closeTime=base + 2*hour, uniqueBettorCount=2),
+                         market('missing', uniqueBettorCount=999)])
+        ascending = self.store.search(sorts='closing:asc,bettors:desc')['markets']
+        descending = self.store.search(sorts='closing:desc,bettors:desc')['markets']
+        self.assertEqual([m['id'] for m in ascending],
+                         ['hours-tie', 'hours', 'days', 'months', 'years', 'missing'])
+        self.assertEqual([m['id'] for m in descending],
+                         ['years', 'months', 'days', 'hours-tie', 'hours', 'missing'])
+        page = self.store.search(sorts='closing:asc,bettors:desc', offset=2, limit=2)
+        self.assertEqual([m['id'] for m in page['markets']], ['days', 'months'])
+
+    def test_chance_zero_is_valid_and_missing_is_last_both_directions(self):
+        self.store.save([market('zero', probability=0), market('one', probability=1),
+                         market('unknown'), market('multi', outcomeType='MULTIPLE_CHOICE', probability=.5),
+                         market('resolved-no', isResolved=True, resolution='NO', probability=.9)])
+        ascending = [m['id'] for m in self.store.search(sorts='chance:asc')['markets']]
+        descending = [m['id'] for m in self.store.search(sorts='chance:desc')['markets']]
+        self.assertEqual(ascending[:3], ['resolved-no', 'zero', 'one'])
+        self.assertEqual(descending[:3], ['one','resolved-no','zero'])
+        self.assertEqual(set(ascending[-2:]), {'unknown','multi'})
+        self.assertEqual(set(descending[-2:]), {'unknown','multi'})
+
+    def test_no_sort_restores_newest_order(self):
+        self.store.save([market('old', createdTime=1, volume=1000), market('new', createdTime=2, volume=1)])
+        self.assertEqual(self.store.search(sorts='')['markets'][0]['id'], 'new')
+
+    def test_resort_reuses_filter_and_save_invalidates_it(self):
+        self.store.save([market('a', volume=1)])
+        self.store.search('navier', sorts='volume:asc')
+        self.assertTrue(self.store.search('navier', sorts='volume:desc')['filterCached'])
+        self.store.save([market('b', volume=2)])
+        data = self.store.search('navier', sorts='volume:desc')
+        self.assertFalse(data['filterCached'])
+        self.assertEqual(data['total'], 2)
+
+    def test_invalid_sort_rejected(self):
+        for spec in ['volume:sideways','volume:asc,volume:desc','secret:asc','volume']:
+            with self.assertRaises(ValueError):
+                self.store.search(sorts=spec)
 
     def test_bad_update_sort_keeps_watermark(self):
         self.store.save([], started=1, watermark=10)
@@ -141,6 +206,9 @@ class HTTPTests(unittest.TestCase):
             status, body = request('GET', '/', {'Host':'mm.localhost'})
             self.assertEqual(status, 200)
             self.assertIn(b'Manifold', body)
+            app.store.search.return_value = {'markets': [], 'total': 0}
+            self.assertEqual(request('GET', '/api/search?sorts=', {'Host':'mm.localhost'})[0], 200)
+            self.assertEqual(app.store.search.call_args.kwargs['sorts'], '')
             app.execute.assert_not_called()
         finally:
             server.shutdown()

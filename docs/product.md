@@ -26,24 +26,42 @@ End-of-2026 Navier–Stokes date, as selected by the user. The event is a **publ
 
 Prefer an existing multimarket if it measures that event. Do not publish a duplicate merely because a standalone binary market is convenient. The local draft is provisional and unapproved. See [research](navier-stokes-research.md).
 
-## Comparing markets — user preferences, 2026-09-05
+## Comparing markets — current design, 2026-09-05
 
-Bettor count matters at least as much as volume. Show Manifold's `uniqueBettorCount` (distinct accounts, not number of trades) as an exact integer column; missing is an em dash, not zero. Default to sorting by most bettors, with volume sorting one selection away.
+Bettor count matters at least as much as volume. Show distinct bettors as an exact integer column, default sorted descending; missing values are an em dash, not zero.
 
-Use fixed-width, right-aligned numeric/date columns with tabular figures so every row is directly comparable. Volume abbreviates to k/m/b as needed (e.g. 23k, 23.4k); hover exposes the exact value. Close dates use fixed-width local YYYY-MM-DD; hover includes local time.
+Every comparison field occupies its own aligned column: Creator, Status, Type, Chance, Bettors, Volume, Closes. Do not stack metadata, a second volume value/bar, or a second date within the row. Only the question may wrap. Numeric columns use tabular digits and right alignment; full usernames are available on hover when truncated.
 
-Core distinctions are always-visible single-click Betting All/Open/Closed and Market type All/Binary/Other controls. Open excludes resolved and past-close markets. Closed includes both resolved and closed-unresolved. An independent resolution dropdown selects Any/Unresolved/Resolved/YES/NO. Default to open markets. Calm green indicates resolved YES and calm red indicates resolved NO, accompanied by the explicit text; unresolved YES probabilities use a gentle green tint and an explicit green Y suffix (e.g. 90.3%Y), while resolved YES/NO retain their distinct filled badges. Apply this scheme in result rows, detail headers and individual answer results.
+Manifold labels the displayed percentage [chance](https://manifold.markets/Ansel/resolves-yes-on-jan-1-2029). Use **Chance**, not cost: this value is not an executable purchase quote. Show `90.3%Y` with green numerals, a slightly smaller green percent sign, and a smaller green Y. Accessible text explains that it means 90.3% chance of YES. Resolved YES/NO have distinct gentle green/red badges. Nonbinary rows display their type/result, not a fabricated scalar chance.
 
-## Deadline and magnitude scanning — 2026-09-05
+## Magnitude and deadline scanning
 
-Time remaining is essential: every closing-date cell leads with a relative countdown and keeps the exact local YYYY-MM-DD beneath it. Under a day show hours/minutes; under a week days/hours; under a year days; beyond that years. Amber marks <=24 hours, muted amber <=7 days, pale blue <=30 days, and neutral text later deadlines. Closed/resolved/no-deadline states are explicit and never shown as a future countdown. Hover supplies the exact local timestamp. Visible lists update every 30 seconds.
+Volume uses fixed-decimal abbreviations (`1.1k`, `2.0k`), so increasing a value does not shorten it by dropping its decimal. A **plum**, continuous logarithmic bar grows behind the number on the same line. The fixed scale runs from 0 to 1 billion and does not rescale after filtering; larger values fill more pixels, including within an abbreviation tier. Exact volume and the scale meaning remain on hover. This supersedes the original blue, separate-line segmented bar.
 
-Abbreviated volume must remain visually comparable by magnitude. An eight-segment fixed decade scale accompanies each number: 1, 10, 100, 1k, 10k, 100k, 1m, 10m. Thus 92 lights two segments while 9k lights four; the scale never changes with filtering. Values of at least 1k also have stronger weight. This is logarithmic magnitude, not a linear proportion. Exact values remain on hover. Missing volume has no lit segments.
+The **Closes** column shows only remaining time, without “in” or a second calendar date. Units have consistent colors: years (`y`) lavender, months (`mo`) ochre, days (`d`) sage, hours (`h`) orange, minutes (`min`) coral. Months and minutes cannot be confused. Values have one decimal place; below one minute shows `<1min`. These are approximate durations (average months/years); hover shows the exact local closing timestamp. Closed, resolved and absent deadlines have explicit neutral displays. Color identifies time scale rather than market outcome.
 
-Unresolved binary and individual-answer probabilities show the YES side explicitly, e.g. 90.3%Y, with Y green and accessible text naming the probability of YES. Probability color identifies the side, not a resolved result. Preserve calm YES-green/NO-red meaning throughout.
+## Direct filters and combined sorting
 
-## Product README — 2026-09-05
+Core distinctions remain one-click All/Open/Closed and All/Binary/Other controls. Closed includes resolved and closed-unresolved. Resolution has its own Any/Unresolved/Resolved/YES/NO filter. Defaults: open markets and most bettors.
 
-The root [readme.md](../readme.md) represents the product to users, using the user's priorities as the basis for its benefits: quick discovery, unique bettor counts, magnitude scanning, explicit probability direction, comparable columns, visible deadlines, clear criteria and local draft review. Describe concrete existing behavior in direct language; do not promise better bets, superior accuracy, universal speed, or tested account actions that have not been tested. Technical information belongs in architecture/operations, linked briefly from the README.
+Click **Chance, Bettors, Volume, or Closes** to make that column the primary sort. A newly selected column starts ascending; selecting an existing secondary column promotes it without changing direction. Repeated clicks on the primary column reverse it, then remove it. Earlier columns remain as tie breakers, with visible priority numbers. This avoids a date click appearing ineffective because Bettors was still primary. Clear sorting restores natural newest-first order. No Shift key or library is required. Sort actual numbers across all filtered matches before pagination. Missing/inapplicable values stay last in both directions, with deterministic ties. Close-time sorting compares timestamps, not displayed unit strings.
 
-Screenshot: user-supplied `~/screenshots/20260905155443_d741581ca44f605def9d43e30373468bd1781efe31d258c11c9a0f61ca04860b.png`, copied unchanged to `docs/images/manifold-local.png`. It shows the selected Navier–Stokes market, filters and comparison columns. The screenshot's 63.2 ms is one observed query, not a performance guarantee.
+## Freshness
+
+The service attempts a refresh every 120 seconds after the previous attempt finishes. This is not a strict guarantee that any shown value is younger than two minutes. Network latency, errors, 30-second page refresh timing and a separately fetched detail panel can make a visible value older. Status shows the last successful sync and errors; details show their own fetch time and a Refresh market button. A live check at 2026-09-05 23:01:46 UTC found a 99-second-old completed catalog sync and exact agreement with the official API for selected market yAA259LCdu's probability, volume and distinct bettor count. That observation is not a permanent freshness guarantee.
+
+## Product README
+
+The root [readme.md](../readme.md) describes benefits using the user's priorities, not unsupported claims about accuracy, betting results or universally guaranteed speed. Technical details belong in architecture/operations. Account actions must not be described as verified with credentials before they have been.
+
+The user-supplied screenshot `~/screenshots/20260905155443_d741581ca44f605def9d43e30373468bd1781efe31d258c11c9a0f61ca04860b.png` is copied unchanged to `docs/images/manifold-local.png`. It records an earlier interface revision and a single 63.2 ms query, not a speed guarantee.
+
+## Recent activity sparkline
+
+Implemented 2026-09-05 for binary rows. Use one aligned horizontal 24-hour history column, with a shared time window and fixed 0–100% probability scale so rows are comparable. A price line alone cannot distinguish low activity from heavy trading that leaves the price stable. Pair the line with plum trade-volume ticks in the same compact graphic, and visible one-line values for net percentage-point change, low–high probability range, and recent volume. Label the window and scales visibly; no hover should be needed to interpret them. Keep all values on one line per market. Tiny charts summarize history, not every individual trade; use time buckets preserving minima and maxima rather than smoothing away spikes. Unknown or incomplete coverage must look different from a flat price or zero activity.
+
+The current question catalog contains snapshots, not sufficient history to reconstruct recent swings. The official [bets endpoint](https://docs.manifold.markets/api#get-v0bets) supports per-market and timestamp filters with pagination. The implementation fetches and caches recent history for visible markets asynchronously, without blocking RAM search or downloading all-site trade history. Reported gross volume counts both sides when returned separately and differs from the market Volume column. It sums absolute executed amounts on returned, non-redemption bet records, including sales, excluding unfilled orders. It is not guaranteed exchange-wide volume: later fills on older orders and non-trade changes can be absent. This limitation is visible above the table. Multiple-answer rows say “Select an answer”; individual answer history is not yet supported.
+
+## Search terms and creator chips
+
+Click a creator to retain existing text terms, remove previous `name:` or `from:` terms, and add `name:Username`. This also clears the separate Creator field to avoid a hidden conflicting restriction. The last typed creator term wins, case-insensitively and by exact username. `from:` remains an alias. My markets applies `name:Ernie` while retaining text. Every text term or double-quoted phrase is mirrored as a small remove button below the search bar; clicking removes only that term and reruns search. Quoted phrases match contiguous normalized text. Other terms are ANDed. All filtering still occurs across the full catalog before sorting/pagination.

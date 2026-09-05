@@ -12,6 +12,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
 from market_store import Manifold, MarketStore
+from history import History
 
 ROOT = Path(__file__).resolve().parent
 
@@ -44,6 +45,7 @@ class Application:
         self.settings = settings
         self.api = Manifold(settings)
         self.store = MarketStore(ROOT / 'data', self.api)
+        self.history = History(self.api)
         self.previews = {}
         self.action_lock = threading.Lock()
         self.draft_lock = threading.Lock()
@@ -146,12 +148,14 @@ def make_handler(app: Application):
                 if not self.trusted_host():
                     return self.respond({'error': 'Unrecognized host'}, 403)
                 parsed = urlsplit(self.path)
-                query = {key: values[0] for key, values in parse_qs(parsed.query).items()}
+                query = {key: values[0] for key, values in parse_qs(parsed.query, keep_blank_values=True).items()}
                 path = parsed.path
                 if path == '/api/status':
                     return self.respond({**app.store.status(), 'username': app.settings['username'], 'connected': bool(app.settings.get('api_key'))})
                 if path == '/api/search':
-                    return self.respond(app.store.search(query.get('q', '')[:500], query.get('state', 'all'), query.get('creator', ''), query.get('sort', 'volume'), max(0, min(1000000, int(query.get('offset', 0)))), market_type=query.get('type', 'all'), resolution=query.get('resolution', 'all')))
+                    return self.respond(app.store.search(query.get('q', '')[:500], query.get('state', 'all'), query.get('creator', ''), query.get('sort', 'volume'), max(0, min(1000000, int(query.get('offset', 0)))), market_type=query.get('type', 'all'), resolution=query.get('resolution', 'all'), sorts=query.get('sorts')))
+                if path.startswith('/api/history/'):
+                    return self.respond(app.history.get(path.split('/')[-1]))
                 if path.startswith('/api/market/'):
                     return self.respond(app.detail(path.split('/')[-1]))
                 if path == '/api/account':
