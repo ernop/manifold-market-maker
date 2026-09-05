@@ -1,0 +1,14 @@
+[Unit]
+Description=Manifold local market search and workshop
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=__WORKDIR__
+ExecStart=__PYTHON__ -u __WORKDIR__/server.py
+Restart=always
+RestartSec=5
+UMask=0077
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,8 @@
+{
+  "port": 8790,
+  "hostname": "mm.localhost",
+  "username": "ernie",
+  "api_key": "",
+  "refresh_seconds": 120,
+  "request_interval_seconds": 0.3
+}
