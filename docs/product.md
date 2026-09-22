@@ -20,6 +20,18 @@ Use named loopback hosts and the existing localhost/Firefox directory. Keep serv
 - Draft checker highlights presence of common criteria sections. It cannot validate a theorem, judge evidence, or certify clarity.
 - Action review binds an exact payload to a one-use, five-minute token. No writes are made during browsing, synchronization, draft saving, or text checks. Bet preview uses Manifold `dryRun`.
 
+## Requested Astra conversation workflow - 2026-09-07
+
+The user wants to ask, in ordinary language, for the market probability of a claim or a reasoned best estimate, and have a local draft prepared for review when no suitable existing market is found. They want to edit its wording and tags in the UI, then explicitly submit it to publish on Manifold.
+
+Current implementation: `mm.localhost` has title/creator search and a manual Market workshop, but no Astra connection, conversation panel, semantic claim matching, forecast generation, or tag editor. The workshop loads a named Markdown draft and edits its question, criteria, closing date, and initial probability. Its criteria checker is lexical. Publication preparation and explicit submission exist; authenticated publication has not been verified. This Codex project chat can research claims and prepare Markdown drafts for the workshop to load, but it is not an embedded assistant with enforced market-only tools.
+
+Proposed interface, not implemented: an Ask Astra panel beside search and the workshop. Search several formulations, inspect current criteria and individual answers, and prefer reuse when the event matches. Show matching markets and their fetch times; distinguish a displayed market probability from an executable bet quote and from Astra's own estimate. Estimates should include evidence, assumptions, and uncertainty. Report search coverage and near matches rather than asserting that a failed keyword search proves no market exists.
+
+When no suitable market is found, populate a local editable draft with question, resolution criteria, tags, closing time, and proposed initial probability. Preserve user edits. The user reviews the final publication payload and submits it; successful publication should show the Manifold link and add the new market to local results.
+
+Proposed control boundary: give the assistant market search/detail, research, and local draft tools. Enforce publication through the application review/submit path, with no assistant access to the Manifold key or publication execution. Instructions alone do not enforce this boundary. An embedded client could use [Codex App Server](https://learn.chatgpt.com/docs/app-server), whose official documentation was checked on 2026-09-07; the installed CLI exposes `codex app-server`. This is a proposed integration, not a tested connection or a confirmed authentication setup.
+
 ## Current research choice
 
 End-of-2026 Navier–Stokes date, as selected by the user. The event is a **public complete solution in 2026 that is subsequently validated**, not validation itself happening in 2026. September 10, 2026 publication with February 2027 validation counts YES. A 2026 announcement without the proof is insufficient under the proposed draft; this is a proposed interpretation to discuss.

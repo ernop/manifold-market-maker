@@ -1,0 +1,47 @@
+{
+  "checked": "2026-09-07",
+  "references": [
+    {
+      "label": "Reddit corporate homepage: waving character",
+      "page": "https://redditinc.com/",
+      "url": "https://redditinc.com/hs-fs/hubfs/Reddit%20Inc/Graphics/Headers/Desktop/RedditInc_Header_Homepage.png?width=400&height=400&name=RedditInc_Header_Homepage.png",
+      "local": "docs/images/reddit-homepage-wave.png",
+      "sha256": "638ddd2462bea111f8ffba9cdd861db1d5144e6f32c252c0e87574e8ac5db02a"
+    },
+    {
+      "label": "Reddit brand page: winking character",
+      "page": "https://redditinc.com/brand",
+      "url": "https://redditinc.com/hs-fs/hubfs/Reddit%20Inc/Graphics/Headers/Desktop/RedditInc_Header_Brand.png?width=400&height=400&name=RedditInc_Header_Brand.png",
+      "local": "docs/images/reddit-brand-thumbsup.png",
+      "sha256": "8a0ac4f1c8f87f2c54b69e411677daec6dbeb9a7d7638dafacb5b9c244942dad"
+    },
+    {
+      "label": "Reddit brand page: arms crossed",
+      "page": "https://redditinc.com/brand",
+      "url": "https://redditinc.com/hs-fs/hubfs/Global%20Assets%20-%20Snoo/Full%20Body/Redditinc_Transparency%20Page_ArmsCrossed@2x.png?width=400&height=428&name=Redditinc_Transparency%20Page_ArmsCrossed@2x.png",
+      "local": "docs/images/reddit-brand-arms-crossed.png",
+      "sha256": "70492d7378a1bbe1c75719d2418ceb0d98ec9edd90eecfbfdce141bf80e6c878"
+    },
+    {
+      "label": "Reddit careers page: tongue expression",
+      "page": "https://redditinc.com/careers",
+      "url": "https://redditinc.com/hs-fs/hubfs/Reddit%20Inc/Careers/Redditinc_Careers%20Page_Tongue@2x.png?width=400&height=400&name=Redditinc_Careers%20Page_Tongue@2x.png",
+      "local": "docs/images/reddit-careers-tongue.png",
+      "sha256": "332a93b6a15862c2acd8e853c035d5bef2f6452ca754899c67d6a4a19930aef2"
+    },
+    {
+      "label": "Reddit careers page: heart-shaped eyes",
+      "page": "https://redditinc.com/careers",
+      "url": "https://redditinc.com/hs-fs/hubfs/Reddit%20Inc/Careers/Redditinc_Careers%20Page_HeartEyes@2x.png?width=400&height=400&name=Redditinc_Careers%20Page_HeartEyes@2x.png",
+      "local": "docs/images/reddit-careers-heart-eyes.png",
+      "sha256": "26696c2818a4e11dd770181977b81137194c81b4da505389029c9a27ac73b5bd"
+    },
+    {
+      "label": "Reddit for Community: costumed character",
+      "page": "https://redditforcommunity.com/",
+      "url": "https://redditforcommunity.com/hubfs/SuperheroSnoo.png",
+      "local": "docs/images/reddit-community-superhero.png",
+      "sha256": "9a873fdd016d2e6999ee17ee6ba14c13bb5231e0bd6deda1c85871ebb21e07f7"
+    }
+  ]
+}

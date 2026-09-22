@@ -14,6 +14,7 @@ All product choices, guides, research, operational facts, and durable working kn
 - [Architecture and API behavior](docs/architecture.md): RAM search, restart cache, initial download and updates, authentication and action review.
 - [Operation and local deployment](docs/operations.md): service, hostname, Caddy, Firefox, checks and recovery.
 - [Navier–Stokes market research](docs/navier-stokes-research.md): existing market, date-versus-validation distinction, draft status and sources.
+- [Reddit illustration retirement market](docs/reddit-illustrations-research.md): image references with direct URLs, existing-market search, complete-retirement criteria, and open scope/date choices.
 - [GitHub and repository](docs/github.md): account audit, public repository, and publishing conventions.
 - [Draft index](drafts/README.md): all local market drafts.
 - [Shared mybrowser orientation](../mybrowser/agents.md), [existing detailed index](../mybrowser/AGENTS.md), and [local services guide](../mybrowser/utilities/caddy/README.md).
