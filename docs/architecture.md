@@ -26,6 +26,10 @@ Binary mana bets only. Multiple-choice answers are displayed with links for trad
 
 Local draft saves write actual `.md` files and add them to [the draft index](../drafts/README.md). Draft evaluation uses labeled lexical checks, not an LLM or proof verifier.
 
+## Resolution review
+
+`review.py` serves `/api/review` for the static page `/review` (`review.html`, `review.js`, `review.css`). It selects the configured user's markets from the RAM catalog: closed and unresolved, or named by a research note. It joins them with notes parsed from `resolutions/*.md` (re-parsed when a file's mtime changes; `README.md` is skipped). The catalog listing has no answers, so multiple-choice rows get answers from `/market/{id}`. That detail is cached for 300 seconds, or until the catalog record's `lastUpdatedTime` passes the cached one, which happens soon after an answer is resolved upstream. `Application.detail` refreshes the same cache whenever a market is fetched live. Parse errors, unknown answer IDs, notes for unknown markets and failed fetches travel to the page as visible errors; nothing falls back to an empty or guessed value. The endpoint is read-only. Note format and product rules: [resolution review](resolution-review.md).
+
 ## Recent trade history
 
 `history.py` serves `/api/history/{id}` independently of search. It requests newest public bets until the 24h boundary or end, with a five-page/5,000-record cap and duplicate-ID suppression. Capped responses are labeled Partial. A 300-market RAM cache expires after 120 seconds; history fetches are serialized, sharing the upstream rate limiter. The client fetches one market at a time for the current page, reuses a bounded cache across sorts, and stops requesting old-page markets after a search change. Price geometry preserves pixel-bucket minima/maxima on a common 0–100% scale. Volume uses 48 half-hour bins and a shared logarithmic scale (0–1 million mana per bin, saturating). Data is creation-time bet history, not a complete fill-event or liquidity-event feed; the UI states that limitation. Errors and missing history are explicit. No chart library or all-site trade import was added.

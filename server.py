@@ -13,6 +13,7 @@ from urllib.parse import parse_qs, urlsplit
 
 from market_store import Manifold, MarketStore
 from history import History
+from review import ReviewBoard
 
 ROOT = Path(__file__).resolve().parent
 
@@ -46,6 +47,7 @@ class Application:
         self.api = Manifold(settings)
         self.store = MarketStore(ROOT / 'data', self.api)
         self.history = History(self.api)
+        self.review = ReviewBoard(ROOT / 'resolutions', self.store, self.api, settings['username'])
         self.previews = {}
         self.action_lock = threading.Lock()
         self.draft_lock = threading.Lock()
@@ -61,6 +63,7 @@ class Application:
             raise ValueError('Invalid market ID')
         market = self.api.request('market/' + market_id)
         self.store.save([market])
+        self.review.remember(market)
         return market
 
     def prepare(self, data: dict) -> dict:
@@ -158,6 +161,8 @@ def make_handler(app: Application):
                     return self.respond(app.history.get(path.split('/')[-1]))
                 if path.startswith('/api/market/'):
                     return self.respond(app.detail(path.split('/')[-1]))
+                if path == '/api/review':
+                    return self.respond(app.review.board())
                 if path == '/api/account':
                     return self.respond(app.identity())
                 if path == '/api/draft':
@@ -166,7 +171,8 @@ def make_handler(app: Application):
                         raise ValueError('Invalid draft name')
                     draft_path = ROOT / 'drafts' / (name + '.md')
                     return self.respond({'name': name, 'markdown': draft_path.read_text() if draft_path.exists() else ''})
-                static = {'/': 'index.html', '/app.js': 'app.js', '/style.css': 'style.css', '/favicon.svg': 'favicon.svg'}
+                static = {'/': 'index.html', '/app.js': 'app.js', '/style.css': 'style.css', '/favicon.svg': 'favicon.svg',
+                          '/review': 'review.html', '/review.js': 'review.js', '/review.css': 'review.css'}
                 if path in static:
                     file = ROOT / 'static' / static[path]
                     return self.respond(file.read_bytes(), content_type=mimetypes.guess_type(str(file))[0] or 'application/octet-stream')

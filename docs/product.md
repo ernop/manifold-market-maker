@@ -20,6 +20,10 @@ Use named loopback hosts and the existing localhost/Firefox directory. Keep serv
 - Draft checker highlights presence of common criteria sections. It cannot validate a theorem, judge evidence, or certify clarity.
 - Action review binds an exact payload to a one-use, five-minute token. No writes are made during browsing, synchronization, draft saving, or text checks. Bet preview uses Manifold `dryRun`.
 
+## Resolving closed markets — 2026-09-29
+
+The user wants his closed markets reviewed, researched, and listed on a local page showing which can be resolved and why, covering binary markets and multiple-choice markets whose answers are sub-steps or progress items. He checks each recommendation and resolves on Manifold himself; the page and the research agents make no Manifold writes. Implemented at `mm.localhost/review`, backed by one checked-in research note per market in `resolutions/`. Details, note format and limits: [resolution review](resolution-review.md).
+
 ## Requested Astra conversation workflow - 2026-09-07
 
 The user wants to ask, in ordinary language, for the market probability of a claim or a reasoned best estimate, and have a local draft prepared for review when no suitable existing market is found. They want to edit its wording and tags in the UI, then explicitly submit it to publish on Manifold.

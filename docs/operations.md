@@ -52,6 +52,10 @@ Eighteen tests pass, including numeric multi-sort priority, pre-pagination sorti
 
 Selecting a header now makes it primary, retaining earlier columns as tie breakers. Browser verification on the Navier results confirms chronological ordering across months and years. Nineteen Python tests pass, including closing timestamps across hours, days, months and years, equal-date bettor ties, missing dates last, and pagination. JavaScript syntax validation passes. Static assets are served directly; no service restart or build is needed for this correction.
 
+## Resolution review page — 2026-09-29
+
+Service restarted with `review.py` and the `/review` page. `/api/review` returned all 20 closed, unresolved markets by Ernie. The first request took 1.2 s because it fetched the four multiple-choice markets live; later requests reuse the answer cache. All 34 tests pass, including note parsing (bullets, numbered steps, tables), format errors, answer-ID validation, cache refetch on a newer catalog record, and visible fetch failures. After adding or editing notes, run `python3 scripts/index_resolutions.py` to relink them from `resolutions/README.md`. The page was inspected in the in-app browser at a 2074 px wide viewport: no horizontal overflow, single-line rows, and working deep links (`/review#market=<id>`) and multiple-choice details. Check with `curl -H 'Host: mm.localhost' http://127.0.0.1/api/review`.
+
 ## History charts and removable creator terms — 2026-09-05
 
 The local service was restarted with the history endpoint and creator-token parser. All 23 tests pass. Browser inspection confirmed real history rendering, creator click producing `navier name:Bayesian`, two matching results, and independent term chips. Search and sorting do not await history requests. Static rendering uses native SVG and JavaScript, with no build step. Recent gross trade amounts can count both sides and differ from Manifold market Volume; the visible legend and product documentation describe coverage limitations.

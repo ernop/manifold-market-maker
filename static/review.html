@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Resolve closed markets · Manifold local</title><link rel="icon" href="/favicon.svg"><link rel="stylesheet" href="/review.css"><script src="/review.js" defer></script></head>
+<body>
+<header><h1><img src="/favicon.svg" alt="">Resolve closed markets</h1><nav><a href="/">Search markets</a><a href="http://localhost">Local services</a><a id="profile-link" href="https://manifold.markets/Ernie" target="_blank" rel="noreferrer">Your markets on Manifold</a></nav></header>
+<div id="notice" role="status" hidden></div>
+<section id="totals" aria-label="Totals"></section>
+<div class="controls">
+<fieldset id="view"><legend>Show</legend><label><input type="radio" name="view" value="unresolved" checked>Needs resolution</label><label><input type="radio" name="view" value="resolved">Resolved</label><label><input type="radio" name="view" value="all">All</label></fieldset>
+<button id="refresh" type="button">Refresh now</button>
+<span id="updated" class="updated"></span>
+</div>
+<section id="file-errors" hidden></section>
+<main>
+<section id="list"><table><colgroup><col class="col-verdict"><col class="col-confidence"><col class="col-question"><col class="col-why"><col class="col-market"><col class="col-bettors"><col class="col-since"><col class="col-open"></colgroup><thead><tr><th>Recommendation</th><th>Confidence</th><th>Market</th><th>Why</th><th class="numeric">At close</th><th class="numeric">Bettors</th><th class="numeric">Closed</th><th>Manifold</th></tr></thead><tbody id="rows"></tbody></table></section>
+<aside id="detail"><h2>Select a market</h2><p>Each row shows the research recommendation and its main reason. Select one to read the evidence, the other side, and what to check, then resolve it on Manifold.</p></aside>
+</main>
+</body></html>

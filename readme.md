@@ -32,6 +32,12 @@ This matters when similar titles describe different bets: a claimed solution, a 
 
 The workshop keeps your own market drafts local while you work out the wording. Its criteria check highlights missing items to review; it does not decide whether the rules are sound. With an account connected, you can review a binary mana bet, a market publication, or a resolution of your own market before submitting it.
 
+## Resolve your closed markets
+
+Open [mm.localhost/review](http://mm.localhost/review) to see every closed market you still need to resolve, with a researched recommendation and its main reason on one line: YES, NO, N/A, Wait, or Your call. Markets that are ready to resolve come first. For multiple-choice markets, each open answer has its own recommendation.
+
+Select a market to read the finding, the sources, the strongest case for the other side, and what to check yourself. Then choose **Open on Manifold to resolve**. **Copy resolution note** gives you a short explanation with sources to paste as a comment. New research appears on the page as it is written, and a market you resolve shows its new status within about two minutes, or right away after **Refresh from Manifold**.
+
 ## Ready when you want it
 
 On this computer, open [mm.localhost](http://mm.localhost), or choose **Manifold** from the Firefox new-tab page or local services list. It starts with the computer and checks for catalog updates about every two minutes. The page shows when the last update completed; this is not a guarantee that every value is less than two minutes old.

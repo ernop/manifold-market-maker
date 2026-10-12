@@ -12,6 +12,8 @@ All product choices, guides, research, operational facts, and durable working kn
 
 - [Product decisions and scope](docs/product.md): what the service does, account actions, user taste, and current boundaries.
 - [Architecture and API behavior](docs/architecture.md): RAM search, restart cache, initial download and updates, authentication and action review.
+- [Resolution review](docs/resolution-review.md): the `/review` page for resolving closed markets, the research-note format, verdict meanings, and the 2026-09-29 research run.
+- [Research notes index](resolutions/README.md): one checked-in note per closed market with recommendation, evidence and the other side.
 - [Operation and local deployment](docs/operations.md): service, hostname, Caddy, Firefox, checks and recovery.
 - [Navier–Stokes market research](docs/navier-stokes-research.md): existing market, date-versus-validation distinction, draft status and sources.
 - [Reddit illustration retirement market](docs/reddit-illustrations-research.md): image references with direct URLs, existing-market search, complete-retirement criteria, and open scope/date choices.

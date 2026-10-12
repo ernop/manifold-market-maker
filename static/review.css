@@ -1,0 +1,113 @@
+/* Neutral text is always #fff: hierarchy comes from size, weight and placement, never dimmed text. */
+:root{color-scheme:dark;--bg:#15191e;--panel:#1e242b;--line:#3b4652;--row-line:#2e3741;--link:#9ac8ff;--button:#2c63a3;--button-hover:#3975bd}
+*{box-sizing:border-box}
+body{margin:0;padding:18px 2%;background:var(--bg);color:#fff;font:15px/1.5 system-ui,sans-serif}
+a{color:var(--link)}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+h1{display:flex;align-items:center;gap:10px;margin:0;font-size:26px;font-weight:800}
+h1 img{width:32px;height:32px}
+nav{display:flex;gap:18px;font-size:15px;font-weight:600}
+button{background:var(--button);color:#fff;border:1px solid #527dad;border-radius:4px;padding:7px 12px;font:600 14px/1.3 system-ui,sans-serif;cursor:pointer;white-space:nowrap;transition:background .2s}
+button:hover{background:var(--button-hover);color:#fff}
+button:disabled{opacity:.6;cursor:default}
+#notice{position:sticky;top:0;z-index:3;background:#6b3a12;color:#fff;padding:10px 14px;border:1px solid #c07a33;margin-bottom:12px;white-space:pre-wrap;font-weight:600}
+
+/*-------TOTALS-------*/
+#totals{display:flex;flex-wrap:wrap;gap:10px 34px;align-items:baseline;margin:4px 0 14px}
+.total{display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.total-value{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.total-label{font-size:15px;font-weight:600}
+.total-errors .total-value{color:#ffb070}
+
+/*-------CONTROLS-------*/
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px;margin-bottom:12px}
+#view{display:flex;align-items:center;gap:0;margin:0;padding:0;border:0}
+#view legend{float:left;margin-right:10px;font-size:15px;font-weight:800}
+#view label{display:flex;align-items:center;gap:7px;padding:6px 13px;background:#202831;border:1px solid #4c5a68;cursor:pointer;font-size:14px;font-weight:500}
+#view label+label{border-left:0}
+#view label:first-of-type{border-radius:4px 0 0 4px}
+#view label:last-of-type{border-radius:0 4px 4px 0}
+#view label:has(input:checked){background:#294866;box-shadow:inset 0 -2px #92bbdf;font-weight:700}
+#view input{accent-color:#9ac8ff;margin:0}
+.updated{font-size:14px;font-variant-numeric:tabular-nums}
+#file-errors{background:#3d2410;border:1px solid #c07a33;padding:10px 14px;margin-bottom:12px}
+#file-errors h2{margin:0 0 6px;font-size:16px}
+#file-errors p{margin:3px 0;font-family:ui-monospace,monospace;font-size:13px;overflow-wrap:anywhere}
+
+/*-------LAYOUT-------*/
+main{display:grid;grid-template-columns:minmax(0,13fr) minmax(0,7fr);gap:20px;align-items:start}
+@media(max-width:1350px){main{grid-template-columns:minmax(0,1fr)}#detail{position:static;max-height:none}}
+
+/*-------TABLE: one line per market-------*/
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+.col-verdict{width:10.5em}.col-confidence{width:6.5em}.col-market{width:6em}.col-bettors{width:5.2em}.col-since{width:5.4em}.col-open{width:5.8em}
+.col-question{width:52%}.col-why{width:48%}
+th{text-align:left;font-size:14px;font-weight:800;padding:8px 7px;border-bottom:2px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+td{padding:7px;border-bottom:1px solid var(--row-line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+.numeric{text-align:right;font-variant-numeric:tabular-nums lining-nums}
+td.numeric{font-size:16px;font-weight:650}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:#222d38}
+tbody tr.selected{background:#283b50;box-shadow:inset 4px 0 #92bbdf}
+tbody tr.resolved-row td{opacity:1}
+.question-cell{font-weight:600}
+.why-cell{font-size:14px}
+.confidence{font-size:15px}
+.confidence-high{font-weight:800}.confidence-medium{font-weight:600}.confidence-low{font-weight:400}
+.open-link{font-weight:700}
+.empty-row td{white-space:normal;padding:18px 7px;font-size:15px;cursor:default}
+
+/*-------VERDICT BADGES: white text on strong fills-------*/
+.verdict{display:inline-block;min-width:3.4em;padding:1px 8px;border-radius:4px;font-weight:800;font-size:14px;line-height:22px;text-align:center;color:#fff;letter-spacing:.2px;font-variant-numeric:tabular-nums}
+.verdict-YES{background:#1d7a46}
+.verdict-NO{background:#b03a3a}
+.verdict-CANCEL{background:#56616f}
+.verdict-PERCENT{background:#7d560d}
+.verdict-WAIT{background:#2d5f9e}
+.verdict-YOUR_CALL{background:#6d42a8}
+.verdict-PENDING{background:transparent;border:1px dashed #fff;line-height:20px}
+.verdict-ERROR{background:#a14d00}
+.verdict-ANSWERS{background:#34404c;border:1px solid #fff;line-height:20px}
+.verdict-group{display:inline-flex;gap:4px;align-items:center}
+.verdict-group .verdict{min-width:0;padding:1px 6px}
+.chance-yes{color:#8fe0ae}
+
+/*-------DETAIL-------*/
+#detail{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:16px 20px 22px}
+#detail h2{font-size:21px;font-weight:800;margin:0 0 10px;line-height:1.3}
+#detail h3{font-size:17px;font-weight:800;margin:20px 0 6px}
+#detail p{margin:6px 0}
+.detail-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0 14px}
+.manifold-button{display:inline-block;background:#1d7a46;color:#fff;text-decoration:none;font-weight:800;font-size:15px;padding:8px 14px;border-radius:4px;border:1px solid #43a06b;transition:background .2s}
+.manifold-button:hover{background:#23904f;color:#fff}
+.facts{display:flex;flex-wrap:wrap;gap:6px 22px;margin:4px 0 12px}
+.fact{display:flex;align-items:baseline;gap:6px;white-space:nowrap}
+.fact-value{font-size:17px;font-weight:750;font-variant-numeric:tabular-nums}
+.fact-label{font-size:14px;font-weight:500}
+.recommendation{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;background:#161c22;border:1px solid var(--line);border-radius:4px}
+.recommendation .verdict{font-size:18px;line-height:28px;padding:2px 12px}
+.recommendation-summary{font-size:16px;font-weight:600;flex:1 1 20em}
+.recommendation .confidence{font-size:16px}
+.note-errors{background:#3d2410;border:1px solid #c07a33;padding:8px 12px;margin:10px 0}
+.note-errors p{font-family:ui-monospace,monospace;font-size:13px;overflow-wrap:anywhere}
+/* Only the answer text may wrap; verdict, confidence and chance stay on its first line. */
+.answer-heading{display:flex;align-items:baseline;gap:10px;margin:14px 0 2px}
+.answer-heading>*{flex:none}
+.answer-confidence{width:4.6em}
+.answer-now{width:4.2em;text-align:right;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.answer-text{flex:1 1 auto;min-width:0;font-size:16px;font-weight:700}
+.answer-reason{margin:2px 0 0}
+.resolved-answers{width:100%;margin-top:6px}
+.resolved-answers td{padding:4px 6px;font-size:14px}
+.resolved-answers td:last-child{text-align:right;width:7em}
+.before-resolving{background:#1b2a3a;border-left:4px solid #92bbdf;padding:6px 12px;margin-top:8px}
+.note-list{margin:4px 0;padding-left:22px}
+.note-list li{margin:4px 0}
+.note-table{border-collapse:collapse;margin:6px 0;table-layout:auto;width:auto;max-width:100%}
+.note-table td{border:1px solid var(--row-line);padding:4px 8px;white-space:normal;font-size:14px;font-variant-numeric:tabular-nums}
+.note-table tr:first-child td{font-weight:800}
+code{font-family:ui-monospace,monospace;font-size:.92em;background:#11161b;padding:0 4px;border-radius:3px}
+details.criteria{margin-top:18px;border-top:1px solid var(--line);padding-top:10px}
+details.criteria summary{cursor:pointer;font-size:17px;font-weight:800}
+.criteria-text{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;margin-top:8px}
+.note-file{margin-top:16px;font-size:13px;font-family:ui-monospace,monospace}

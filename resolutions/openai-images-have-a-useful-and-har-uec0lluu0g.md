@@ -1,0 +1,45 @@
+---
+market: 5lhzQtyA0z
+recommendation: YES
+confidence: medium
+checked: 2026-09-29
+summary: YES: OpenAI has put SynthID in all ChatGPT/API images since 2026-05-19, still there in Sept; resizing and format changes do not remove it.
+---
+# OpenAI images have a useful and hard to remove watermark, by mid 2026
+
+## Finding
+
+On 2026-05-19, before the 2026-06-30 close, OpenAI began embedding Google DeepMind's SynthID invisible watermark, alongside C2PA metadata, in every image from ChatGPT, Codex, and the API, including its state-of-the-art GPT Image 2, and launched a free public checker at openai.com/verify, which is what makes the watermark useful. It is still in place more than four months later (the 3-month mark was 2026-08-19): OpenAI added a verification API on 2026-07-31, and the ChatGPT Images 2.5 system card of 2026-09-08 says SynthID continues across ChatGPT, Codex, and the API. On criterion 2, no source shows resizing or format changes removing it. An open-source removal project confirmed on openai.com/verify in June 2026 that JPEG re-encoding left OpenAI's SynthID detectable, and hands-on tests of Google's SynthID (same technology) found it survived downscaling to 200 px, JPEG quality 15, screenshots, and 300 rounds of compression and resizing. The methods that do remove it are deliberate attacks that regenerate the image with a diffusion model or subtract a learned watermark pattern, not the "resizing/changing format" the description names as trivial. Under the 2026-06-12 clarification (it counts if implemented before close and it stays non-removable, even if the 3 months run past close), this supports YES.
+
+## Evidence
+
+- [Advancing content provenance for a safer, more transparent AI ecosystem (OpenAI)](https://openai.com/index/advancing-content-provenance/) (2026-05-19, updated 2026-07-31; direct fetch blocked by Cloudflare, text read via search index and the [PublicNow mirror](https://www.publicnow.com/view/45BCEBCF25FEC1534D7CE955F6D773CDCD533599?1779216509=)): adds SynthID to images generated through ChatGPT, Codex, or the API; previews a public verification tool; says "No detection method is foolproof". The July 31 update adds audio and API access for verification.
+- [Google: Tools to understand how content was created and edited](https://blog.google/innovation-and-ai/products/identifying-ai-generated-media-online/) (Google I/O, May 2026): Google confirms OpenAI, Kakao, and ElevenLabs are bringing SynthID to their AI-generated content.
+- [OpenAI Help Center: Provenance signals (Content Credentials, SynthID)](https://help.openai.com/en/articles/8912793-provenance-signals-content-credentials-synthid-in-openai-generated-content) (accessed 2026-09-29 via search index; direct fetch blocked): "Supported images generated with ChatGPT, Codex, and the OpenAI API include both signals"; a watermark may be degraded by compression, cropping, noise, edits, or format conversion.
+- [OpenAI API docs: Content provenance](https://developers.openai.com/api/docs/guides/content-provenance) (accessed 2026-09-29): SynthID "may survive some transformations"; "Compression, cropping, screenshots, metadata removal, and format conversions can erase or weaken a signal"; strict rate limits; forbids using repeated queries to remove or evade the watermark.
+- [OpenAI API: GPT-Image-2 model page](https://developers.openai.com/api/docs/models/gpt-image-2) (accessed 2026-09-29): GPT Image 2 (snapshot gpt-image-2-2026-04-21) is described as OpenAI's state-of-the-art image generation model.
+- [ChatGPT Images 2.5 System Card](https://deploymentsafety.openai.com/chatgpt-images-2-5/new-safety-challenges) (2026-09-08): section 4, "Image Provenance", says SynthID watermarking is incorporated through ChatGPT, Codex, and the OpenAI API. The provenance section was read via search index; the direct fetch returned only the introduction.
+- [wiltodelta/remove-ai-watermarks, docs/synthid.md](https://github.com/wiltodelta/remove-ai-watermarks/blob/main/docs/synthid.md) (measurements June to August 2026, accessed 2026-09-29): confirmed on openai.com/verify that JPEG re-encoding does not remove OpenAI's SynthID. Diffusion img2img regeneration at strength 0.05 to 0.20 did remove it. OpenAI's mark cleared at about a third of the strength Google's needed.
+- [Ars Technica: Google's SynthID watermark is hard to break, but it doesn't solve AI disinformation](https://arstechnica.com/ai/2026/07/tested-google-synthid-works-great-but-labeling-ai-content-may-be-a-losing-game/) (2026-07-29): Google's SynthID survived 300 rounds of random compression and resizing, plus screenshots, and broke only after that plus a 20% crop. Google's and OpenAI's detectors do not read each other's marks.
+- [MajorGeeks: Google Is Hiding an Invisible Watermark in AI Images. So I Tried to Break It](https://www.majorgeeks.com/content/page/google_is_hiding_an_invisible_watermark_in_ai_images_so_i_tried_to_break_it.html) (2026-09-19): Google's SynthID was still detected after downscaling to 200 px and back, PNG to JPEG at quality 15, crops, overlays, and a screenshot. The only simple edit that defeated it was cropping away most of the image; the author points to AI-reconstruction projects as the removal route that works.
+- [SynthID-Image: Image watermarking at internet scale (arXiv 2510.09263)](https://arxiv.org/html/2510.09263) (2025-10): Google DeepMind reports state-of-the-art robustness to common image perturbations; the remove-ai-watermarks notes above summarize its benchmark as 30 transformations, including JPEG, WebP, format conversion, crop, and resize.
+- [aloshdenny/reverse-SynthID](https://github.com/aloshdenny/reverse-SynthID) (accessed 2026-09-29): JPEG Q50 and untargeted transforms barely affected Google's watermark. A 7-stage attack including VAE regeneration defeated Google's detector on Gemini images (OpenAI's mark not tested).
+- [RAIW SynthID remover](https://raiw.cc/synthid-remover) (accessed 2026-09-29): hosted service that claims to remove SynthID from Gemini and ChatGPT images with a two-stage diffusion pipeline; 3 free removals per day.
+- [Invisible Image Watermarks Are Provably Removable Using Generative AI (arXiv 2306.01953)](https://arxiv.org/abs/2306.01953) (2023): regeneration attacks (add noise, then reconstruct with a generative model) remove pixel-level invisible watermarks in general.
+- [Accountboy: How to Tell If an Image Is AI Generated](https://www.accountboy.com/en-us-usd/news-detail/1268) (accessed 2026-09-29): sample images downloaded from OpenAI's April 2026 GPT Image 2 launch page came back "No OpenAI signals detected". Those images predate the SynthID rollout, so the result says nothing about removal.
+
+## Other side
+
+The strongest NO case rests on wording. The title says "hard to remove", the early-resolution sentence says "unbreakable", and Ernie's 2026-06-12 comment says "isn't removable". OpenAI's mark can be removed: hosted and open-source tools regenerate the image with a diffusion model, after which openai.com/verify reads clean, and the June 2026 measurements suggest OpenAI's implementation is weaker than Google's. OpenAI's own docs also say format conversions "can erase or weaken" the signal. But criterion 2 defines trivial removal as "resizing/changing format", and no source found shows those remove it. Regeneration attacks work against every invisible pixel watermark, so reading "non-removable" as "no method at all removes it" would make the market impossible to win, which the "not trivial" wording does not intend. The 2026-06-12 comment answered Fynn's timing question; it did not tighten criterion 2. This keeps the recommendation at YES but is why confidence is medium rather than high.
+
+## Before resolving
+
+Ernie said on 2026-07-23 that he was testing against openai.com/verify; his own result should decide this. A quick test:
+
+1. Generate two new images in ChatGPT: one photo-realistic scene, and one flat graphic with large solid-color areas and a little text. Download the PNGs. Do not use images from OpenAI's launch pages or anything made before 2026-05-19; those have no SynthID.
+2. Upload each original to openai.com/verify. Expect both C2PA and SynthID to be detected.
+3. Make trivial variants with ImageMagick (each command also strips metadata): `magick in.png -strip -quality 60 a.jpg`, `magick in.png -strip -quality 80 b.webp`, `magick in.png -strip -resize 50% c.png`, `magick in.png -strip -resize 512x -quality 50 d.jpg`. Add a screenshot of the image shown at 100% zoom, cropped tightly.
+4. Upload each variant. C2PA should now read not detected; SynthID should still read detected.
+5. If SynthID is detected on every variant of both images, resolve YES. If a plain resize or format change repeatedly turns SynthID to not detected, that meets the market's own definition of trivial removal: resolve NO.
+
+The verifier is rate-limited, so keep the batch to about a dozen uploads. Also decide how you meant "isn't removable" in your 2026-06-12 comment. If you meant "not trivially removable" (criterion 2), resolve YES. If you meant "not removable by any method", the diffusion-based removers make it NO.

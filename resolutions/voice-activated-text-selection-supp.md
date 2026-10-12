@@ -1,0 +1,39 @@
+---
+market: 95oeovro0l
+recommendation: NO
+confidence: medium
+checked: 2026-09-29
+summary: NO: by June 30, 2026 no mainstream Android assistant selected or copied on-screen text by voice; Gemini could only read it back for a manual copy.
+---
+# Voice activated text selection supported by AI agent on Android by mid-2026
+
+## Finding
+
+By 2026-06-30 the mainstream Android assistants (Gemini, the new Bixby, Perplexity Assistant, Moto AI) could read the screen and answer a spoken question such as "what's the address on my screen?", but none documented an action that selects the text in the app or puts it on the clipboard; the user still has to tap Copy on the assistant's reply. Gemini's agent feature ("screen automation", beta from March 2026) only works on a few recent Pixel and Galaxy phones, in select food, grocery and rideshare apps, inside a separate virtual window, and the wider "Gemini Intelligence" automation announced on May 12, 2026 was due "this summer" and describes no text-copy feature. Voice Access can select text by fixed commands and "Copy this phone number", but it is not an LLM agent and has no address command. The description asks for an agent that will "select the right text for me" when told "copy the address", so the agent itself has to select or copy, and nothing mainstream did that. Third-party apps count (2026-06-19 clarification), but the only voice agents I found with a clipboard tool are niche open-source or paid-credit apps, with no evidence that they work in 5 of the 9 listed apps.
+
+## Evidence
+
+- [Get started with the Gemini mobile app (Android), Gemini Apps Help](https://support.google.com/gemini/answer/14554984?co=GENIE.Platform%3DAndroid&hl=en) (accessed 2026-09-29): Gemini opens with "Hey Google" or the power button and can answer questions about the current screen ("Ask about screen") in an overlay.
+- [Use screen actions to chat with the Gemini mobile app, Gemini Apps Help](https://support.google.com/gemini/answer/15850607?hl=en) (accessed 2026-09-29): with Intelligent Screen Context on (English only), Gemini decides from a spoken or typed question when to read the screen, with no tap needed.
+- [Gemini stops making you manually hit 'Ask about screen', Android Authority](https://www.androidauthority.com/gemini-screen-context-3625824/) (2025-12-16): automatic screen context started rolling out; in early testing it recognized questions about the screen "about 50/50".
+- [How to use Google Gemini on your phone, The Verge](https://www.theverge.com/24305656/gemini-google-assistant-android-how-to) (2024-11-26): each Gemini response has a copy icon that sends it to the clipboard; this is a manual tap.
+- [Ask Gemini to handle your multi-step tasks in select Android apps, Gemini Apps Help](https://support.google.com/gemini/answer/16940971?hl=en) (accessed 2026-09-29): "screen automation" is a beta for Pixel 10 and Galaxy S26/Z Fold 8/Z Flip 8, US and Korea, select apps only, running the app in an on-device virtual phone environment.
+- [Gemini on Android lets you assign multi-step tasks, Google blog](https://blog.google/innovation-and-ai/products/gemini-app/android-multi-step-tasks/) (2026-02-25): the beta covers select apps in the food, grocery and rideshare categories.
+- [Google just gave Gemini the power to control apps on the Galaxy S26, Android Central](https://www.androidcentral.com/apps-software/gemini-screen-automation-rolling-out-for-galaxy-s26) (2026-03-12): at rollout the supported US apps were Lyft, Uber, Grubhub, DoorDash, Uber Eats and Starbucks.
+- [A smarter, more proactive Android with Gemini Intelligence, Google blog](https://blog.google/products-and-platforms/platforms/android/gemini-intelligence/) (2026-05-12): broader app automation would roll out "in waves" starting "this summer"; the post describes no feature for selecting or copying on-screen text.
+- [Use Voice Access commands, Android Accessibility Help](https://support.google.com/accessibility/android/answer/6151854?hl=en) (accessed 2026-09-29): fixed commands such as "Select [word or phrase]", "Copy", and, in English, "Copy this phone number"; no address command.
+- [Samsung Introduces the New Bixby in One UI 8.5, Samsung Newsroom](https://news.samsung.com/global/samsung-introduces-the-new-bixby-in-one-ui-8-5) (2026-02-20): the new Bixby is a conversational agent for device settings and web answers; no text-copy feature is described.
+- [Enable Perplexity on your Samsung Galaxy phone, Samsung US support](https://www.samsung.com/us/support/answer/ANS10010357/) (accessed 2026-09-29): Perplexity can be set as the side-button assistant and allowed to analyze on-screen text and images, which it answers questions about.
+- [Moto AI, Google Play](https://play.google.com/store/apps/details?hl=en_US&id=com.motorola.uxcore) (accessed 2026-09-29): "Next Move" suggests next steps from screen context; the listing does not describe voice-driven copying of on-screen text.
+- [Search your screen with Circle to Search, Android Help](https://support.google.com/android/answer/14508957?hl=en) (accessed 2026-09-29): Circle to Search can select and copy any on-screen text, but selection is by circling, highlighting or tapping.
+- [Panda - Voice Accessibility, Google Play](https://play.google.com/store/apps/details?id=com.blurr.voice&hl=en_US) (accessed 2026-09-29): third-party voice agent built on the accessibility service, paid by credits; reviews from October 2025 and May 2026 call it slow and credit-limited.
+- [Panda agent action list, GitHub](https://github.com/Ayush0Chaudhary/blurr/blob/main/app/src/main/java/com/blurr/voice/v2/actions/Action.kt) (accessed 2026-09-29): the agent can tap, long-press, type and scroll, but has no clipboard action and no drag action to extend a text selection.
+- [X-OmniClaw, OPPO Mente Lab, GitHub](https://github.com/OPPO-Mente-Lab/X-OmniClaw) (repository created 2026-04-15): open-source agent with push-to-talk, screen understanding and a clipboard tool; installed from an APK with your own model API keys.
+
+## Other side
+
+Under the looser reading, Gemini already did the job: with Intelligent Screen Context on, Ernie could say "Hey Google, what's the address on my screen?" in any of the nine listed apps (Gemini works from a screenshot, so Discord's and Google Docs' selection quirks do not matter), and one tap on the copy icon puts the answer on the clipboard. That clears the 50% app threshold and removes "fighting with whatever UI the page has", which is the stated motivation, and the description says the instructions can be simple and asks whether "muttering short phrases to your llm agents to do stuff with the things you see on your screen" is possible and widespread. Third-party agents such as OPPO's X-OmniClaw pair push-to-talk with a clipboard tool and could in principle copy the text themselves. This does not change the recommendation because the criteria describe the agent doing the selecting or copying, the Gemini route still needs a manual copy from the reply (and Gemini's automatic screen detection was unreliable in early tests), and Ernie's own June 19 comment ("Can it listen to me yet?") shows he had no voice-driven version working on his phone. The third-party agents are niche, need sideloading or paid credits, and I found no test showing any of them copying text in the listed apps.
+
+## Before resolving
+
+Decide whether "Gemini reads the address back and I tap its copy icon" counts as the agent selecting the text for you. If it does, YES is defensible because the screen reading works in all nine listed apps; if the agent itself must select or copy the text, resolve NO. If you want a direct check, open a place in Google Maps, say "Hey Google, copy the address on my screen", and try to paste into another app without touching Gemini's reply; a test today reflects September 2026 features, not June 30.
